@@ -43,5 +43,5 @@ class Application(Base):
     folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
     folder = relationship("app.db.models.folder.Folder", back_populates="applications")
 
-    creator_id = Column(GUID, ForeignKey("users.id"))
+    creator_id = Column(GUID, ForeignKey("users.id"), nullable=False)
     creator = relationship("app.db.models.user.User", back_populates="applications")

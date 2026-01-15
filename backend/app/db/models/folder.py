@@ -13,7 +13,7 @@ class Folder(Base):
 
     applications = relationship("app.db.models.application.Application", back_populates="folder")
 
-    creator_id = Column(GUID, ForeignKey("users.id"))
+    creator_id = Column(GUID, ForeignKey("users.id"), nullable=False)
     creator = relationship("app.db.models.user.User", back_populates="folders")
 
     @property
