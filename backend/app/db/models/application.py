@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table, Text, JSON
 from sqlalchemy.orm import relationship
 from app.db.base import Base
+from fastapi_users_db_sqlalchemy import GUID
 
 
 # Association table for many-to-many relationship between Application and Tag
@@ -41,3 +42,6 @@ class Application(Base):
 
     folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
     folder = relationship("app.db.models.folder.Folder", back_populates="applications")
+
+    creator_id = Column(GUID, ForeignKey("users.id"))
+    creator = relationship("app.db.models.user.User", back_populates="applications")

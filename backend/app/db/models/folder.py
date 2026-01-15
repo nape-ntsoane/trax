@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db.base import Base
+from fastapi_users_db_sqlalchemy import GUID
 
 
 class Folder(Base):
@@ -11,6 +12,9 @@ class Folder(Base):
     position = Column(Integer, default=0)
 
     applications = relationship("app.db.models.application.Application", back_populates="folder")
+
+    creator_id = Column(GUID, ForeignKey("users.id"))
+    creator = relationship("app.db.models.user.User", back_populates="folders")
 
     @property
     def count(self):
