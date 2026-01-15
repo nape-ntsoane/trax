@@ -47,3 +47,14 @@ class ApplicationRead(ApplicationBase):
     
     class Config:
         from_attributes = True
+
+class ApplicationReadBrief(BaseModel):
+    id: int
+    title: str
+    company: str
+    status: Optional[StatusRead] = None
+    priority: Optional[PriorityRead] = None
+    closing_date: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
