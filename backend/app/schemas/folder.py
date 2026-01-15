@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from app.schemas.application import ApplicationRead
+from app.schemas.application import ApplicationRead, ApplicationReadBrief
 
 class FolderBase(BaseModel):
     title: str
@@ -21,5 +21,5 @@ class FolderRead(FolderBase):
 
 class FolderWithRecentApplications(BaseModel):
     folder: Optional[FolderRead] # Optional for unfiled
-    recent_applications: List[ApplicationRead]
+    recent_applications: List[ApplicationReadBrief]
     application_count: int
