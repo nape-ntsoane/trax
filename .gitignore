@@ -9,3 +9,5 @@ wheels/
 .venv
 .brief
 .env
+
+app.log
