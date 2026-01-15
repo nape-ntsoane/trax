@@ -32,9 +32,12 @@ class Application(Base):
     description = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
     role = Column(String, nullable=True)
-    
+
     tags = relationship("app.db.models.selects.Tag", secondary=application_tags)
     
     salary = Column(String, nullable=True)
     position = Column(Integer, default=0)
     starred = Column(Boolean, default=False)
+
+    folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
+    folder = relationship("app.db.models.folder.Folder", back_populates="applications")
