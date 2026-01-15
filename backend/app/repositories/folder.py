@@ -1,7 +1,8 @@
 from typing import List, Optional, Tuple, Dict, Any
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, desc
+from sqlalchemy import select, func, and_, desc, or_
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
 from app.db.models.folder import Folder
@@ -66,6 +67,12 @@ class FolderRepository:
             # Get recent apps
             recent_apps_query = (
                 select(Application)
+                .options(
+                    selectinload(Application.tags),
+                    selectinload(Application.status),
+                    selectinload(Application.priority),
+                    selectinload(Application.folder)
+                )
                 .where(and_(Application.folder_id == folder.id, Application.creator_id == user_id))
                 .order_by(desc(Application.id))
                 .limit(5)
@@ -82,6 +89,12 @@ class FolderRepository:
         if unfiled_count > 0:
              recent_unfiled_query = (
                 select(Application)
+                .options(
+                    selectinload(Application.tags),
+                    selectinload(Application.status),
+                    selectinload(Application.priority),
+                    selectinload(Application.folder)
+                )
                 .where(and_(Application.folder_id.is_(None), Application.creator_id == user_id))
                 .order_by(desc(Application.id))
                 .limit(5)
