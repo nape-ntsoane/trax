@@ -67,6 +67,7 @@ class Settings(BaseSettings):
         )
 
     LOGGING_LEVEL: str = "INFO"
+    LOGGING_FILE: str = "app.log"
 
     API_PREFIX: str = ""
 
