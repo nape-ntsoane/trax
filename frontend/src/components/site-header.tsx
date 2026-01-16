@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { brand } from "@/config/brand"
+import { auth } from "@/lib/auth"
 
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -25,6 +26,11 @@ export function SiteHeader() {
   const pathname = usePathname()
   const router = useRouter()
   const title = titles[pathname] || brand.name
+
+  const handleLogout = async () => {
+    await auth.logout()
+    router.push("/login")
+  }
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -74,7 +80,7 @@ export function SiteHeader() {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon" onClick={() => router.push("/login")}>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <IconLogout className="h-5 w-5" />
                 <span className="sr-only">Logout</span>
             </Button>

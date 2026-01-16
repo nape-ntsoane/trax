@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -7,8 +9,39 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { brand } from "@/config/brand"
+import { auth } from "@/lib/auth"
+import { toast } from "sonner"
 
 export default function RegisterPage() {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [type, setType] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (password !== confirmPassword) {
+        toast.error("Passwords do not match")
+        return
+    }
+
+    setLoading(true)
+    try {
+      // Only sending email and password as requested
+      await auth.register(email, password)
+      toast.success("Registered successfully. Please login.")
+      router.push("/login")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to register")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
@@ -25,45 +58,74 @@ export default function RegisterPage() {
               Create an account to start tracking your applications.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="John Doe" required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
-            </div>
-            <div className="grid gap-2">
-                <Label htmlFor="type">User Type</Label>
-                <Select>
-                    <SelectTrigger id="type">
-                        <SelectValue placeholder="Select user type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="job_seeker">Job Seeker</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input id="confirm-password" type="password" required />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full">Sign up</Button>
-            <div className="text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/login" className="underline">
-                    Sign in
-                </Link>
-            </div>
-          </CardFooter>
+          <form onSubmit={handleRegister}>
+            <CardContent className="grid gap-4">
+                <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input 
+                    id="name" 
+                    placeholder="John Doe" 
+                    required 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+                </div>
+                <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="m@example.com" 
+                    required 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="type">User Type</Label>
+                    <Select onValueChange={setType} value={type}>
+                        <SelectTrigger id="type">
+                            <SelectValue placeholder="Select user type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="student">Student</SelectItem>
+                            <SelectItem value="job_seeker">Job Seeker</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input 
+                    id="password" 
+                    type="password" 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                </div>
+                <div className="grid gap-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input 
+                    id="confirm-password" 
+                    type="password" 
+                    required 
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+                <Button className="w-full" disabled={loading}>
+                    {loading ? "Signing up..." : "Sign up"}
+                </Button>
+                <div className="text-center text-sm">
+                    Already have an account?{" "}
+                    <Link href="/login" className="underline">
+                        Sign in
+                    </Link>
+                </div>
+            </CardFooter>
+          </form>
         </Card>
       </div>
     </div>
