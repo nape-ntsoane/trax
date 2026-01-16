@@ -7,6 +7,8 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import {
   Avatar,
@@ -28,6 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { auth } from "@/lib/auth"
 
 export function NavUser({
   user,
@@ -39,6 +42,17 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await auth.logout()
+      toast.success("Logged out successfully")
+      router.push("/login")
+    } catch (error) {
+      // Error is handled in auth.logout
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -98,7 +112,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -20,7 +20,9 @@ export const auth = {
             const error = await res.json().catch(() => ({ detail: "Login failed" }));
             const message = getErrorMessage(error.detail);
             toast.error(message);
-            throw new Error(message);
+            const err = new Error(message);
+            (err as any).isShown = true;
+            throw err;
         }
         
         const data = await res.json();
@@ -29,9 +31,17 @@ export const auth = {
         }
         return data;
     } catch (error: any) {
+        if (error.isShown) throw error;
+
         if (!error.message || error.message === "Failed to fetch") {
             toast.error("Network error. Please check your connection.");
+            const err = new Error("Network error");
+            (err as any).isShown = true;
+            throw err;
         }
+        
+        toast.error(error.message || "Login failed");
+        error.isShown = true;
         throw error;
     }
   },
@@ -49,7 +59,7 @@ export const auth = {
                 method: "POST",
             });
         } catch (e) {
-            toast.error("Logout failed");
+            // Already toasted in apiRequest
         }
         localStorage.removeItem("token");
     }

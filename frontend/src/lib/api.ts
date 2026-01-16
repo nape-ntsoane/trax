@@ -24,17 +24,28 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
       const error = await res.json().catch(() => ({ detail: "An error occurred" }));
       const message = getErrorMessage(error.detail);
       toast.error(message);
-      throw new Error(message);
+      const err = new Error(message);
+      (err as any).isShown = true;
+      throw err;
     }
 
     if (res.status === 204) return null;
     return res.json();
   } catch (error: any) {
-    // If it's already handled (thrown by us), just rethrow
-    // Otherwise, it might be a network error
+    if (error.isShown) {
+        throw error;
+    }
+    
     if (!error.message || error.message === "Failed to fetch") {
         toast.error("Network error. Please check your connection.");
+        const err = new Error("Network error");
+        (err as any).isShown = true;
+        throw err;
     }
+    
+    const message = error.message || "An unexpected error occurred";
+    toast.error(message);
+    error.isShown = true;
     throw error;
   }
 }
