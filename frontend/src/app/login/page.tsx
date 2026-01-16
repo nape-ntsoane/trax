@@ -25,7 +25,7 @@ export default function LoginPage() {
       toast.success("Logged in successfully")
       router.push("/dashboard")
     } catch (error: any) {
-      toast.error(error.message || "Failed to login")
+      // Error is already toasted in auth.login
     } finally {
       setLoading(false)
     }

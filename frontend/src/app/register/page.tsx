@@ -36,7 +36,7 @@ export default function RegisterPage() {
       toast.success("Registered successfully. Please login.")
       router.push("/login")
     } catch (error: any) {
-      toast.error(error.message || "Failed to register")
+      // Error is already toasted in auth.register (via apiRequest)
     } finally {
       setLoading(false)
     }

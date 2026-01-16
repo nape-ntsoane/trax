@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 
 export function CreateFolderSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   return (
@@ -34,7 +35,10 @@ export function CreateFolderSheet({ open, onOpenChange }: { open: boolean; onOpe
           </div>
         </div>
         <SheetFooter>
-          <Button type="submit" onClick={() => onOpenChange(false)}>Create Folder</Button>
+          <Button type="submit" onClick={() => {
+              onOpenChange(false)
+              toast.success("Folder created")
+          }}>Create Folder</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -108,7 +112,10 @@ export function CreateApplicationSheet({ open, onOpenChange }: { open: boolean; 
           </div>
         </div>
         <SheetFooter>
-          <Button type="submit" onClick={() => onOpenChange(false)}>Create Application</Button>
+          <Button type="submit" onClick={() => {
+              onOpenChange(false)
+              toast.success("Application created")
+          }}>Create Application</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

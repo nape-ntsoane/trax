@@ -56,6 +56,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 
 export type Application = {
   id: number
@@ -74,6 +75,11 @@ export type Application = {
 function ActionCell({ application }: { application: Application }) {
   const [showEditSheet, setShowEditSheet] = React.useState(false)
 
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(application.id.toString())
+    toast.success("ID copied to clipboard")
+  }
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -91,7 +97,7 @@ function ActionCell({ application }: { application: Application }) {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(application.id.toString())}
+              onClick={handleCopyId}
             >
               Copy ID
             </DropdownMenuItem>
@@ -178,7 +184,10 @@ function ActionCell({ application }: { application: Application }) {
             </div>
           </div>
           <SheetFooter>
-            <Button type="submit" onClick={() => setShowEditSheet(false)}>Save changes</Button>
+            <Button type="submit" onClick={() => {
+                setShowEditSheet(false)
+                toast.success("Application updated")
+            }}>Save changes</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
