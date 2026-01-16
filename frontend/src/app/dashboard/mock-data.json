@@ -1,0 +1,102 @@
+{
+  "folders": [
+    { "id": 1, "title": "Frontend Roles" },
+    { "id": 2, "title": "Backend Roles" },
+    { "id": 3, "title": "Fullstack Roles" },
+    { "id": 4, "title": "Remote Options" },
+    { "id": 5, "title": "Wishlist" }
+  ],
+  "applications": [
+    {
+      "id": 101,
+      "title": "Senior Frontend Engineer",
+      "company": "TechCorp",
+      "role": "Frontend",
+      "status": "Applied",
+      "priority": "High",
+      "salary": "$120k - $150k",
+      "closing_date": "2023-12-31",
+      "link": "https://techcorp.com/jobs/101",
+      "starred": true,
+      "folder_id": 1
+    },
+    {
+      "id": 102,
+      "title": "React Developer",
+      "company": "WebSolutions",
+      "role": "Frontend",
+      "status": "Interviewing",
+      "priority": "Medium",
+      "salary": "$100k - $130k",
+      "closing_date": "2023-11-15",
+      "link": "https://websolutions.com/careers",
+      "starred": false,
+      "folder_id": 1
+    },
+    {
+      "id": 201,
+      "title": "Backend Engineer",
+      "company": "ServerSide",
+      "role": "Backend",
+      "status": "Offer",
+      "priority": "High",
+      "salary": "$130k - $160k",
+      "closing_date": "2023-10-20",
+      "link": "https://serverside.io/jobs",
+      "starred": true,
+      "folder_id": 2
+    },
+    {
+      "id": 202,
+      "title": "Python Developer",
+      "company": "DataFlow",
+      "role": "Backend",
+      "status": "Rejected",
+      "priority": "Low",
+      "salary": "$90k - $110k",
+      "closing_date": "2023-09-01",
+      "link": null,
+      "starred": false,
+      "folder_id": 2
+    },
+    {
+      "id": 301,
+      "title": "Fullstack Engineer",
+      "company": "OmniTech",
+      "role": "Fullstack",
+      "status": "Applied",
+      "priority": "Medium",
+      "salary": "$115k - $145k",
+      "closing_date": "2024-01-10",
+      "link": "https://omnitech.com/join",
+      "starred": false,
+      "folder_id": 3
+    },
+    {
+      "id": 401,
+      "title": "Remote Go Developer",
+      "company": "CloudNative",
+      "role": "Backend",
+      "status": "Applied",
+      "priority": "High",
+      "salary": "$140k - $170k",
+      "closing_date": "2023-12-01",
+      "link": "https://cloudnative.io/remote",
+      "starred": true,
+      "folder_id": 4
+    },
+    {
+      "id": 501,
+      "title": "Dream Job",
+      "company": "Google",
+      "role": "Software Engineer",
+      "status": "Not Applied",
+      "priority": "High",
+      "salary": "$180k+",
+      "closing_date": null,
+      "link": "https://google.com/careers",
+      "starred": true,
+      "folder_id": 5
+    }
+  ]
+}

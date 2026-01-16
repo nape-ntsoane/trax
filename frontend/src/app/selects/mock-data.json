@@ -1,0 +1,22 @@
+{
+  "tags": [
+    { "id": 1, "title": "Frontend", "color": "blue" },
+    { "id": 2, "title": "Backend", "color": "green" },
+    { "id": 3, "title": "Fullstack", "color": "purple" },
+    { "id": 4, "title": "Remote", "color": "cyan" },
+    { "id": 5, "title": "Contract", "color": "gray" },
+    { "id": 6, "title": "Startup", "color": "pink" }
+  ],
+  "priorities": [
+    { "id": 1, "title": "High", "color": "red" },
+    { "id": 2, "title": "Medium", "color": "orange" },
+    { "id": 3, "title": "Low", "color": "yellow" }
+  ],
+  "statuses": [
+    { "id": 1, "title": "Applied", "color": "blue" },
+    { "id": 2, "title": "Interviewing", "color": "purple" },
+    { "id": 3, "title": "Offer", "color": "green" },
+    { "id": 4, "title": "Rejected", "color": "red" },
+    { "id": 5, "title": "Ghosted", "color": "gray" }
+  ]
+}
