@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,7 @@ const titles: Record<string, string> = {
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const router = useRouter()
   const title = titles[pathname] || "Trax"
 
   return (
@@ -72,7 +73,7 @@ export function SiteHeader() {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => router.push("/login")}>
                 <IconLogout className="h-5 w-5" />
                 <span className="sr-only">Logout</span>
             </Button>
