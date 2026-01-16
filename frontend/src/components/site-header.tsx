@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { brand } from "@/config/brand"
 
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -23,7 +24,7 @@ const titles: Record<string, string> = {
 export function SiteHeader() {
   const pathname = usePathname()
   const router = useRouter()
-  const title = titles[pathname] || "Trax"
+  const title = titles[pathname] || brand.name
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">

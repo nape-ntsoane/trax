@@ -5,16 +5,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { IconInnerShadowTop } from "@tabler/icons-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { brand } from "@/config/brand"
 
 export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
          <div className="flex items-center gap-2 font-semibold">
-            <IconInnerShadowTop className="size-6" />
-            <span>Trax</span>
+            <brand.logo className="size-6" />
+            <span>{brand.name}</span>
          </div>
       </header>
       <div className="flex flex-1 items-center justify-center p-4">

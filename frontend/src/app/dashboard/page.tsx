@@ -53,7 +53,7 @@ export default function Page() {
           {/* Auto-create Input */}
           <div className="flex gap-2">
             <Input 
-                placeholder="Paste job link to auto-create application..." 
+                placeholder="Paste job link or job post text to auto-create application..."
                 className="animate-breathing-glow border-purple-400/50 focus-visible:ring-purple-500/50"
             />
             <Button className="animate-breathing-glow bg-background border border-purple-400/50 hover:bg-accent">

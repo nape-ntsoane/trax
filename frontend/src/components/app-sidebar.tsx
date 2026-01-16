@@ -5,7 +5,6 @@ import {
   IconChartBar,
   IconDashboard,
   IconHelp,
-  IconInnerShadowTop,
   IconMail,
   IconSearch,
   IconSettings,
@@ -17,14 +16,21 @@ import { NavSecondary } from "@/components/nav-secondary"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
+import { brand } from "@/config/brand"
 
 const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
   navMain: [
     {
       title: "Dashboard",
@@ -78,10 +84,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <IconInnerShadowTop className="size-5" />
+                  <brand.logo className="size-5" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold text-lg">Acme Inc.</span>
+                  <span className="truncate font-semibold text-lg">{brand.name}</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </a>
@@ -94,6 +100,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
+      <SidebarFooter>
+        <div className="p-4 text-xs text-center text-muted-foreground">
+          Product of {brand.company}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }
