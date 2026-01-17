@@ -73,20 +73,6 @@ class Settings(BaseSettings):
     def POSTGRESQL_DATABASE_URI(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
 
-    @computed_field
-    @property
-    def DATABASE_URL(self) -> str:
-        """
-        Returns the correct database URI depending on ENVIRONMENT.
-        - Production: use env-injected production DB (Supabase)
-        - Test / Dev: use local Postgres
-        """
-        if self.ENVIRONMENT == "production":
-            if not self.PRODUCTION_DATABASE_URI:
-                raise ValueError("PRODUCTION_DATABASE_URI must be set in production!")
-            return self.PRODUCTION_DATABASE_URI
-
-        return self.POSTGRESQL_DATABASE_URI
 
     # Logging
     LOGGING_LEVEL: str = "INFO"
