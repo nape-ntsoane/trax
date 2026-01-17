@@ -8,3 +8,5 @@ htmlcov
 .venv
 reference_implementations
 alembic/versions/
+
+vibe-prompts
