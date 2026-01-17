@@ -2,12 +2,6 @@ import secrets
 from typing import Annotated, Any, Literal
 from pydantic import AnyUrl, BeforeValidator, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from dotenv import load_dotenv
-import os
-
-# Load .env for local dev only
-if os.getenv("ENVIRONMENT") != "production":
-    load_dotenv(".env")
 
 
 def parse_cors(v: Any) -> list[str] | str:
@@ -17,10 +11,9 @@ def parse_cors(v: Any) -> list[str] | str:
         return v
     raise ValueError(v)
 
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # For local dev only; ignored if env vars are set
+        # Only for local/dev, ignored if env vars are set (e.g., in Render)
         env_file="../.env",
         env_ignore_empty=True,
         extra="ignore",
@@ -28,7 +21,7 @@ class Settings(BaseSettings):
 
     # Security
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
 
     # Environment
     ENVIRONMENT: Literal["local", "test", "production"] = "local"
@@ -53,7 +46,7 @@ class Settings(BaseSettings):
     # Postgres config (local/dev)
     POSTGRES_SERVER: str = ""
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = "some"
+    POSTGRES_USER: str = ""
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
 
@@ -72,7 +65,6 @@ class Settings(BaseSettings):
     @property
     def POSTGRESQL_DATABASE_URI(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
-
 
     # Logging
     LOGGING_LEVEL: str = "INFO"
