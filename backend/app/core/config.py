@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # Postgres config (local/dev)
     POSTGRES_SERVER: str = ""
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = ""
+    POSTGRES_USER: str = "some"
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
 
@@ -69,6 +69,10 @@ class Settings(BaseSettings):
     # Production database
     PRODUCTION_DATABASE_URI: str | None = None
 
+    @property
+    def POSTGRESQL_DATABASE_URI(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
+
     @computed_field
     @property
     def DATABASE_URI(self) -> str:
@@ -81,7 +85,8 @@ class Settings(BaseSettings):
             if not self.PRODUCTION_DATABASE_URI:
                 raise ValueError("PRODUCTION_DATABASE_URI must be set in production!")
             return self.PRODUCTION_DATABASE_URI
-        return self.SQLALCHEMY_DATABASE_URI
+
+        return self.POSTGRESQL_DATABASE_URI
 
     # Logging
     LOGGING_LEVEL: str = "INFO"
