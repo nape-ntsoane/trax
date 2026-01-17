@@ -28,6 +28,7 @@ export default function Page() {
   const [showCreateFolder, setShowCreateFolder] = React.useState(false)
   const [showCreateApp, setShowCreateApp] = React.useState(false)
   const [page, setPage] = React.useState(1)
+  const [searchQuery, setSearchQuery] = React.useState("")
   
   const { folders, isLoading: foldersLoading, mutate: mutateFolders } = useFolders()
   
@@ -38,9 +39,22 @@ export default function Page() {
   // Reset page when tab changes
   React.useEffect(() => {
       setPage(1)
+      setSearchQuery("")
   }, [activeTab])
 
-  const table = useApplicationsTable(applications, total, page, 25, setPage)
+  const filteredApplications = React.useMemo(() => {
+      if (!searchQuery) return applications
+      const lowerQuery = searchQuery.toLowerCase()
+      return applications.filter(app => 
+          app.title.toLowerCase().includes(lowerQuery) ||
+          app.company.toLowerCase().includes(lowerQuery) ||
+          app.role?.toLowerCase().includes(lowerQuery) ||
+          app.status?.title.toLowerCase().includes(lowerQuery) ||
+          app.priority?.title.toLowerCase().includes(lowerQuery)
+      )
+  }, [applications, searchQuery])
+
+  const table = useApplicationsTable(filteredApplications, total, page, 25, setPage)
 
   const handleDeleteFolder = async () => {
       if (activeTab === "all") return
@@ -120,10 +134,8 @@ export default function Page() {
                   type="search"
                   placeholder="Search applications..."
                   className="pl-9"
-                  value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-                  onChange={(event) =>
-                    table.getColumn("title")?.setFilterValue(event.target.value)
-                  }
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
                 />
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">

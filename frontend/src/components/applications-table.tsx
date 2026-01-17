@@ -370,6 +370,7 @@ export function useApplicationsTable(data: Application[], total: number = 0, pag
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
     data,
@@ -383,12 +384,14 @@ export function useApplicationsTable(data: Application[], total: number = 0, pag
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     manualPagination: true,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
       pagination: {
           pageIndex: page - 1,
           pageSize: perPage
