@@ -162,9 +162,11 @@ export function CreateApplicationSheet({ open, onOpenChange }: { open: boolean; 
                 </SelectTrigger>
                 <SelectContent>
                   {folders?.map((f) => (
-                      <SelectItem key={f.folder.id} value={f.folder.id.toString()}>
-                          {f.folder.title}
-                      </SelectItem>
+                      f.folder && (
+                        <SelectItem key={f.folder.id} value={f.folder.id.toString()}>
+                            {f.folder.title}
+                        </SelectItem>
+                      )
                   ))}
                 </SelectContent>
               </Select>
