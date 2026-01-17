@@ -1,5 +1,12 @@
 import asyncio
 import random
+import sys
+import os
+import uuid
+
+# Add the parent directory to sys.path to allow importing 'app'
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import async_session_maker
 from app.db.models.user import User
@@ -7,7 +14,6 @@ from app.db.models.folder import Folder
 from app.db.models.application import Application
 from app.db.models.selects import Tag, Priority, Status
 from app.core.auth import get_password_hash
-import uuid
 
 async def seed_db():
     async with async_session_maker() as session:
