@@ -125,9 +125,9 @@ async def list_all_selects(
     current_user: User = Depends(current_active_user),
 ):
     service = SelectsService(db)
-    tags = await service.list_tags(page=1, per_page=100)
-    statuses = await service.list_statuses(page=1, per_page=100)
-    priorities = await service.list_priorities(page=1, per_page=100)
+    tags = await service.list_tags(current_user, page=1, per_page=100)
+    statuses = await service.list_statuses(current_user, page=1, per_page=100)
+    priorities = await service.list_priorities(current_user, page=1, per_page=100)
     
     return {
         "tags": tags,
