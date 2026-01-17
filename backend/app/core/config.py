@@ -69,16 +69,13 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
-    # Production database
-    PRODUCTION_DATABASE_URI: str | None = None
-
     @property
     def POSTGRESQL_DATABASE_URI(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
 
     @computed_field
     @property
-    def DATABASE_URI(self) -> str:
+    def DATABASE_URL(self) -> str:
         """
         Returns the correct database URI depending on ENVIRONMENT.
         - Production: use env-injected production DB (Supabase)
