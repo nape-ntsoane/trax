@@ -7,4 +7,10 @@ export const endpoints = {
   folders: {
     dashboard: "/folders/dashboard",
   },
+  selects: {
+    list: "/selects/",
+    tags: "/selects/tags",
+    statuses: "/selects/statuses",
+    priorities: "/selects/priorities",
+  },
 }

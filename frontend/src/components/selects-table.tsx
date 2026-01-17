@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { toast } from "sonner"
 
 export type SelectItem = {
   id: number
@@ -26,48 +27,54 @@ export type SelectItem = {
   color: string
 }
 
-export const columns: ColumnDef<SelectItem>[] = [
-  {
-    accessorKey: "title",
-    header: "Title",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
-  },
-  {
-    accessorKey: "color",
-    header: "Color",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <div 
-            className="h-4 w-4 rounded-full border" 
-            style={{ backgroundColor: row.getValue("color") }} 
-        />
-        <span className="capitalize">{row.getValue("color")}</span>
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-end gap-2">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <IconEdit className="h-4 w-4" />
-          <span className="sr-only">Edit</span>
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-          <IconTrash className="h-4 w-4" />
-          <span className="sr-only">Delete</span>
-        </Button>
-      </div>
-    ),
-  },
-]
-
 interface SelectsTableProps {
   data: SelectItem[]
   title: string
+  onDelete: (id: number) => void
 }
 
-export function SelectsTable({ data, title }: SelectsTableProps) {
+export function SelectsTable({ data, title, onDelete }: SelectsTableProps) {
+  const columns: ColumnDef<SelectItem>[] = React.useMemo(() => [
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
+    },
+    {
+      accessorKey: "color",
+      header: "Color",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <div 
+              className="h-4 w-4 rounded-full border" 
+              style={{ backgroundColor: row.getValue("color") }} 
+          />
+          <span className="capitalize">{row.getValue("color")}</span>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast.info("Edit not implemented yet")}>
+            <IconEdit className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-destructive" 
+            onClick={() => onDelete(row.original.id)}
+          >
+            <IconTrash className="h-4 w-4" />
+            <span className="sr-only">Delete</span>
+          </Button>
+        </div>
+      ),
+    },
+  ], [onDelete])
+
   const table = useReactTable({
     data,
     columns,
