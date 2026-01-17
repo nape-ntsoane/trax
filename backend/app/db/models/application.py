@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table, Text, JSON
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.db.base import Base
 from fastapi_users_db_sqlalchemy import GUID
 
@@ -39,6 +40,9 @@ class Application(Base):
     salary = Column(String, nullable=True)
     position = Column(Integer, default=0)
     starred = Column(Boolean, default=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
     folder = relationship("app.db.models.folder.Folder", back_populates="applications")

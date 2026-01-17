@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.db.base import Base
 from fastapi_users_db_sqlalchemy import GUID
 
@@ -10,6 +11,9 @@ class Folder(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     position = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     applications = relationship("app.db.models.application.Application", back_populates="folder")
 
