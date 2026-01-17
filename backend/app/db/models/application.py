@@ -44,7 +44,7 @@ class Application(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
+    folder_id = Column(Integer, ForeignKey("folders.id", ondelete="SET NULL"), nullable=True)
     folder = relationship("app.db.models.folder.Folder", back_populates="applications")
 
     creator_id = Column(GUID, ForeignKey("users.id"), nullable=False)
