@@ -72,7 +72,7 @@ export default function LoginPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button className="w-full" disabled={loading}>
+              <Button className="w-full mt-4" disabled={loading}>
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
               <div className="text-center text-sm">
