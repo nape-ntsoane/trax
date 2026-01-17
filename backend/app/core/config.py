@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     # Project info
     PROJECT_NAME: str = ""
 
+    # Production
+    DATABASE_URL: str = ""
+
     # Postgres config (local/dev)
     POSTGRES_SERVER: str = ""
     POSTGRES_PORT: int = 5432
