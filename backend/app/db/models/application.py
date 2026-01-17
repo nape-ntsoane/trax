@@ -9,8 +9,8 @@ from fastapi_users_db_sqlalchemy import GUID
 application_tags = Table(
     'application_tags',
     Base.metadata,
-    Column('application_id', Integer, ForeignKey('applications.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
+    Column('application_id', Integer, ForeignKey('applications.id', ondelete="CASCADE")),
+    Column('tag_id', Integer, ForeignKey('tags.id', ondelete="CASCADE"))
 )
 
 class Application(Base):
@@ -21,12 +21,12 @@ class Application(Base):
     company = Column(String, index=True)
     closing_date = Column(DateTime, nullable=True)
     
-    priority_id = Column(Integer, ForeignKey("priorities.id"), nullable=True)
+    priority_id = Column(Integer, ForeignKey("priorities.id", ondelete="SET NULL"), nullable=True)
     priority = relationship("app.db.models.selects.Priority")
     
     link = Column(String, nullable=True)
     
-    status_id = Column(Integer, ForeignKey("statuses.id"), nullable=True)
+    status_id = Column(Integer, ForeignKey("statuses.id", ondelete="SET NULL"), nullable=True)
     status = relationship("app.db.models.selects.Status")
     
     timeline = Column(JSON, nullable=True)
