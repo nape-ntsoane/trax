@@ -203,7 +203,7 @@ export function SelectsTable({ data, title, onDelete, onUpdate }: SelectsTablePr
               Make changes to your item here. Click save when you're done.
             </SheetDescription>
           </SheetHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-6 py-8 px-8 sm:px-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
                 Title
