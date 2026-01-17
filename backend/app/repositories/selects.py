@@ -12,8 +12,8 @@ class SelectsRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, model: Type[Base], **kwargs) -> Base:
-        instance = model(**kwargs)
+    async def create(self, model: Type[Base], user_id: uuid.UUID, **kwargs) -> Base:
+        instance = model(creator_id=user_id, **kwargs)
         self.session.add(instance)
         try:
             await self.session.commit()
@@ -29,7 +29,8 @@ class SelectsRepository:
             raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
 
         # Verify ownership
-        await self.verify_ownership(model, item_id, user_id)
+        if instance.creator_id != user_id:
+            raise HTTPException(status_code=403, detail=f"You do not own this {model.__name__}")
 
         for key, value in kwargs.items():
             setattr(instance, key, value)
@@ -44,7 +45,8 @@ class SelectsRepository:
             raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
 
         # Verify ownership
-        await self.verify_ownership(model, item_id, user_id)
+        if instance.creator_id != user_id:
+            raise HTTPException(status_code=403, detail=f"You do not own this {model.__name__}")
 
         await self.session.delete(instance)
         await self.session.commit()
@@ -53,24 +55,6 @@ class SelectsRepository:
         result = await self.session.execute(select(model).where(model.id == item_id))
         return result.scalars().first()
 
-    async def get_all(self, model: Type[Base], skip: int = 0, limit: int = 100) -> List[Base]:
-        result = await self.session.execute(select(model).offset(skip).limit(limit))
+    async def get_all(self, model: Type[Base], user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[Base]:
+        result = await self.session.execute(select(model).where(model.creator_id == user_id).offset(skip).limit(limit))
         return result.scalars().all()
-
-    async def verify_ownership(self, model: Type[Base], item_id: int, user_id: uuid.UUID):
-        query = select(Application).where(Application.creator_id == user_id)
-        
-        if model == Tag:
-            query = query.join(Application.tags).where(Tag.id == item_id)
-        elif model == Status:
-            query = query.where(Application.status_id == item_id)
-        elif model == Priority:
-            query = query.where(Application.priority_id == item_id)
-        else:
-             raise HTTPException(status_code=400, detail="Unknown model type")
-
-        result = await self.session.execute(query)
-        app = result.scalars().first()
-        
-        if not app:
-             raise HTTPException(status_code=403, detail=f"You do not own any application using this {model.__name__}")
