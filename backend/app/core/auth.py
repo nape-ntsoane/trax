@@ -16,6 +16,7 @@ from fastapi_users.authentication import (
     JWTStrategy
 )
 from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users.password import PasswordHelper
 
 
 # FastAPI Users
@@ -45,3 +46,8 @@ auth_backend = AuthenticationBackend(
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 current_active_user = fastapi_users.current_user(active=True)
 
+# Password Helper
+password_helper = PasswordHelper()
+
+def get_password_hash(password: str) -> str:
+    return password_helper.hash(password)
