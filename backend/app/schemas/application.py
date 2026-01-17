@@ -10,7 +10,7 @@ class ApplicationBase(BaseModel):
     priority_id: Optional[int] = None
     link: Optional[str] = None
     status_id: Optional[int] = None
-    timeline: Optional[Dict[str, Any]] = None
+    timeline: Optional[List[Dict[str, Any]]] = None
     description: Optional[str] = None
     notes: Optional[str] = None
     role: Optional[str] = None
@@ -29,7 +29,7 @@ class ApplicationUpdate(BaseModel):
     priority_id: Optional[int] = None
     link: Optional[str] = None
     status_id: Optional[int] = None
-    timeline: Optional[Dict[str, Any]] = None
+    timeline: Optional[List[Dict[str, Any]]] = None
     description: Optional[str] = None
     notes: Optional[str] = None
     role: Optional[str] = None
