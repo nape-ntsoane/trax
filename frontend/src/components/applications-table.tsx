@@ -57,6 +57,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
+import { updateApplication, deleteApplication } from "@/hooks/use-applications"
+import { useFolders } from "@/hooks/use-folders"
+import { useSelects } from "@/hooks/use-selects"
 
 export type Application = {
   id: number
@@ -82,6 +85,52 @@ export type Application = {
 
 function ActionCell({ application }: { application: Application }) {
   const [showEditSheet, setShowEditSheet] = React.useState(false)
+  const { mutate } = useFolders()
+  const { statuses, priorities } = useSelects()
+  
+  const [formData, setFormData] = React.useState({
+    title: application.title,
+    company: application.company,
+    role: application.role || "",
+    status_id: application.status?.id?.toString() || "",
+    priority_id: application.priority?.id?.toString() || "",
+    salary: application.salary || "",
+    closing_date: application.closing_date ? new Date(application.closing_date).toISOString().split('T')[0] : "",
+    link: application.link || ""
+  })
+
+  const handleChange = (key: string, value: string) => {
+    setFormData(prev => ({ ...prev, [key]: value }))
+  }
+
+  const handleSave = async () => {
+      try {
+          const payload = {
+              ...formData,
+              status_id: formData.status_id ? parseInt(formData.status_id) : null,
+              priority_id: formData.priority_id ? parseInt(formData.priority_id) : null,
+              closing_date: formData.closing_date ? new Date(formData.closing_date).toISOString() : null
+          }
+          await updateApplication(application.id, payload)
+          toast.success("Application updated")
+          mutate()
+          setShowEditSheet(false)
+      } catch (error) {
+          // Error handled by apiRequest
+      }
+  }
+
+  const handleDelete = async () => {
+      if (confirm("Are you sure you want to delete this application?")) {
+          try {
+              await deleteApplication(application.id)
+              toast.success("Application deleted")
+              mutate()
+          } catch (error) {
+              // Error handled by apiRequest
+          }
+      }
+  }
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(application.id.toString())
@@ -118,7 +167,7 @@ function ActionCell({ application }: { application: Application }) {
                 </a>
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={handleDelete}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -134,68 +183,84 @@ function ActionCell({ application }: { application: Application }) {
           <div className="grid gap-6 py-6">
             <div className="grid gap-2">
               <Label htmlFor="title">Title</Label>
-              <Input id="title" defaultValue={application.title} />
+              <Input 
+                id="title" 
+                value={formData.title} 
+                onChange={(e) => handleChange("title", e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="company">Company</Label>
-              <Input id="company" defaultValue={application.company} />
+              <Input 
+                id="company" 
+                value={formData.company} 
+                onChange={(e) => handleChange("company", e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="role">Role</Label>
-              <Input id="role" defaultValue={application.role} />
+              <Input 
+                id="role" 
+                value={formData.role} 
+                onChange={(e) => handleChange("role", e.target.value)}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="status">Status</Label>
-                <Select defaultValue={application.status?.title}>
+                <Select value={formData.status_id} onValueChange={(val) => handleChange("status_id", val)}>
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Applied">Applied</SelectItem>
-                    <SelectItem value="Interviewing">Interviewing</SelectItem>
-                    <SelectItem value="Offer">Offer</SelectItem>
-                    <SelectItem value="Rejected">Rejected</SelectItem>
-                    <SelectItem value="Not Applied">Not Applied</SelectItem>
+                    {statuses.map((s) => (
+                        <SelectItem key={s.id} value={s.id.toString()}>{s.title}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="priority">Priority</Label>
-                <Select defaultValue={application.priority?.title}>
+                <Select value={formData.priority_id} onValueChange={(val) => handleChange("priority_id", val)}>
                   <SelectTrigger id="priority">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="High">High</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="Low">Low</SelectItem>
+                    {priorities.map((p) => (
+                        <SelectItem key={p.id} value={p.id.toString()}>{p.title}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="salary">Salary</Label>
-              <Input id="salary" defaultValue={application.salary} />
+              <Input 
+                id="salary" 
+                value={formData.salary} 
+                onChange={(e) => handleChange("salary", e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="closing_date">Closing Date</Label>
               <Input 
                 id="closing_date" 
                 type="date" 
-                defaultValue={application.closing_date || ""} 
+                value={formData.closing_date} 
+                onChange={(e) => handleChange("closing_date", e.target.value)}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="link">Link</Label>
-              <Input id="link" defaultValue={application.link || ""} />
+              <Input 
+                id="link" 
+                value={formData.link} 
+                onChange={(e) => handleChange("link", e.target.value)}
+              />
             </div>
           </div>
           <SheetFooter>
-            <Button type="submit" onClick={() => {
-                setShowEditSheet(false)
-                toast.success("Application updated")
-            }}>Save changes</Button>
+            <Button type="submit" onClick={handleSave}>Save changes</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>

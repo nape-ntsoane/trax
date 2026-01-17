@@ -14,26 +14,50 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Trash2 } from "lucide-react"
+import { deleteFolder, useFolders } from "@/hooks/use-folders"
+import { toast } from "sonner"
 
 interface Application {
   id: number
   title: string
   role: string
-  status: string
+  status: any
   company: string
 }
 
 interface FolderCardProps {
+  id: number
   title: string
   applications: Application[]
 }
 
-export function FolderCard({ title, applications }: FolderCardProps) {
+export function FolderCard({ id, title, applications }: FolderCardProps) {
+  const { mutate } = useFolders()
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this folder?")) {
+        try {
+            await deleteFolder(id)
+            toast.success("Folder deleted")
+            mutate()
+        } catch (error) {
+            // Error handled by apiRequest
+        }
+    }
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>Recent applications</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="flex flex-col space-y-1.5">
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>Recent applications</CardDescription>
+        </div>
+        <Button variant="ghost" size="icon" onClick={handleDelete}>
+            <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+        </Button>
       </CardHeader>
       <CardContent>
         <Table>
@@ -52,7 +76,9 @@ export function FolderCard({ title, applications }: FolderCardProps) {
                 <TableCell>{app.company}</TableCell>
                 <TableCell>{app.role}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{app.status}</Badge>
+                  <Badge variant="outline" style={{ backgroundColor: app.status?.color, color: app.status?.color ? 'white' : undefined }}>
+                      {app.status?.title || "No Status"}
+                  </Badge>
                 </TableCell>
               </TableRow>
             ))}

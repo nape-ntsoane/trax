@@ -19,68 +19,48 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CreateFolderSheet, CreateApplicationSheet } from "@/components/create-forms"
-import { apiRequest } from "@/lib/api"
-import { endpoints } from "@/config/endpoints"
 import { toast } from "sonner"
-
-type FolderDashboardItem = {
-  folder: {
-    title: string
-    position: number
-    id: number
-  }
-  recent_applications: Application[]
-  application_count: number
-}
-
-type DashboardResponse = {
-  items: FolderDashboardItem[]
-  total: number
-  page: number
-  per_page: number
-}
+import { useFolders, deleteFolder } from "@/hooks/use-folders"
 
 export default function Page() {
   const [activeTab, setActiveTab] = React.useState("all")
   const [showCreateFolder, setShowCreateFolder] = React.useState(false)
   const [showCreateApp, setShowCreateApp] = React.useState(false)
-  const [dashboardData, setDashboardData] = React.useState<DashboardResponse | null>(null)
-  const [loading, setLoading] = React.useState(true)
-
-  const fetchDashboard = React.useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await apiRequest(endpoints.folders.dashboard)
-      setDashboardData(data)
-    } catch (error) {
-      // Error handled by apiRequest
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    fetchDashboard()
-  }, [fetchDashboard])
+  
+  const { folders, isLoading, mutate } = useFolders()
 
   const allApplications = React.useMemo(() => {
-    if (!dashboardData) return []
-    return dashboardData.items.flatMap(item => item.recent_applications)
-  }, [dashboardData])
+    if (!folders) return []
+    return folders.flatMap(item => item.recent_applications)
+  }, [folders])
 
   const filteredApplications = React.useMemo(() => {
-    if (!dashboardData) return []
+    if (!folders) return []
     if (activeTab === "all") {
       return allApplications
     }
     const folderId = parseInt(activeTab)
-    const folderItem = dashboardData.items.find(item => item.folder.id === folderId)
+    const folderItem = folders.find(item => item.folder && item.folder.id === folderId)
     return folderItem ? folderItem.recent_applications : []
-  }, [activeTab, dashboardData, allApplications])
+  }, [activeTab, folders, allApplications])
 
   const table = useApplicationsTable(filteredApplications)
 
-  if (loading && !dashboardData) {
+  const handleDeleteFolder = async () => {
+      if (activeTab === "all") return
+      if (confirm("Are you sure you want to delete this folder?")) {
+          try {
+              await deleteFolder(parseInt(activeTab))
+              toast.success("Folder deleted")
+              setActiveTab("all")
+              mutate()
+          } catch (error) {
+              // Error handled by apiRequest
+          }
+      }
+  }
+
+  if (isLoading && !folders) {
       return (
         <div className="flex h-screen items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -118,15 +98,17 @@ export default function Page() {
               <div className="flex-1 overflow-x-auto pb-2">
                 <TabsList className="w-max justify-start">
                   <TabsTrigger value="all">All</TabsTrigger>
-                  {dashboardData?.items.map((item) => (
-                    <TabsTrigger key={item.folder.id} value={item.folder.id.toString()}>
-                      {item.folder.title}
-                    </TabsTrigger>
+                  {folders?.map((item) => (
+                    item.folder && (
+                        <TabsTrigger key={item.folder.id} value={item.folder.id.toString()}>
+                        {item.folder.title}
+                        </TabsTrigger>
+                    )
                   ))}
                 </TabsList>
               </div>
               {activeTab !== "all" && (
-                <Button variant="ghost" size="icon" className="text-destructive shrink-0">
+                <Button variant="ghost" size="icon" className="text-destructive shrink-0" onClick={handleDeleteFolder}>
                   <IconTrash className="h-4 w-4" />
                   <span className="sr-only">Delete Folder</span>
                 </Button>
