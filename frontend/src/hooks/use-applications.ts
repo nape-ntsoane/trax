@@ -14,12 +14,24 @@ export interface Application {
     folder_id: number;
 }
 
-export function useApplications(folderId?: number) {
-    const endpoint = folderId ? `/folders/${folderId}/applications` : "/applications/";
-    const { data, error, isLoading, mutate } = useSWR<Application[]>(endpoint, apiRequest);
+export interface ApplicationsResponse {
+    items: Application[];
+    total: number;
+    page: number;
+    per_page: number;
+}
+
+export function useApplications(folderId?: number, page: number = 1, perPage: number = 25) {
+    const baseUrl = folderId ? `/folders/${folderId}/applications` : "/applications/";
+    const endpoint = `${baseUrl}?page=${page}&per_page=${perPage}`;
+    
+    const { data, error, isLoading, mutate } = useSWR<ApplicationsResponse>(endpoint, apiRequest);
 
     return {
-        applications: data,
+        applications: data?.items || [],
+        total: data?.total || 0,
+        page: data?.page || 1,
+        per_page: data?.per_page || perPage,
         isLoading,
         isError: error,
         mutate,

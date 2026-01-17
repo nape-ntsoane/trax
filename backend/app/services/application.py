@@ -47,10 +47,8 @@ class ApplicationService:
         return application
 
     async def list_applications(self, current_user: User, page: int = 1, per_page: int = 10):
-        skip = (page - 1) * per_page
-        applications = await self.repo.get_all(current_user.id, skip, per_page)
-        # Again, get_all doesn't return total.
-        return applications
+        # Use search with empty query to get paginated results with total count
+        return await self.search_applications(current_user, query=None, filters=None, page=page, per_page=per_page)
 
     async def search_applications(self, current_user: User, query: str | None, filters: dict | None, page: int = 1, per_page: int = 10):
         skip = (page - 1) * per_page

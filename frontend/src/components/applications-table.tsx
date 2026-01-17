@@ -365,7 +365,7 @@ export const columns: ColumnDef<Application>[] = [
   },
 ]
 
-export function useApplicationsTable(data: Application[]) {
+export function useApplicationsTable(data: Application[], total: number = 0, page: number = 1, perPage: number = 25, onPageChange?: (page: number) => void) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -374,23 +374,33 @@ export function useApplicationsTable(data: Application[]) {
   const table = useReactTable({
     data,
     columns,
+    pageCount: Math.ceil(total / perPage),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(), // We are doing server-side pagination
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+          pageIndex: page - 1,
+          pageSize: perPage
+      }
     },
-    initialState: {
-        pagination: {
-            pageSize: 25
+    onPaginationChange: (updater) => {
+        if (typeof updater === 'function') {
+            const newState = updater({
+                pageIndex: page - 1,
+                pageSize: perPage
+            });
+            onPageChange?.(newState.pageIndex + 1);
         }
     }
   })

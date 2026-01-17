@@ -21,30 +21,26 @@ import {
 import { CreateFolderSheet, CreateApplicationSheet } from "@/components/create-forms"
 import { toast } from "sonner"
 import { useFolders, deleteFolder } from "@/hooks/use-folders"
+import { useApplications } from "@/hooks/use-applications"
 
 export default function Page() {
   const [activeTab, setActiveTab] = React.useState("all")
   const [showCreateFolder, setShowCreateFolder] = React.useState(false)
   const [showCreateApp, setShowCreateApp] = React.useState(false)
+  const [page, setPage] = React.useState(1)
   
-  const { folders, isLoading, mutate } = useFolders()
+  const { folders, isLoading: foldersLoading, mutate: mutateFolders } = useFolders()
+  
+  // Fetch applications based on active tab and page
+  const folderId = activeTab === "all" ? undefined : parseInt(activeTab)
+  const { applications, total, isLoading: appsLoading, mutate: mutateApps } = useApplications(folderId, page)
 
-  const allApplications = React.useMemo(() => {
-    if (!folders) return []
-    return folders.flatMap(item => item.recent_applications)
-  }, [folders])
+  // Reset page when tab changes
+  React.useEffect(() => {
+      setPage(1)
+  }, [activeTab])
 
-  const filteredApplications = React.useMemo(() => {
-    if (!folders) return []
-    if (activeTab === "all") {
-      return allApplications
-    }
-    const folderId = parseInt(activeTab)
-    const folderItem = folders.find(item => item.folder && item.folder.id === folderId)
-    return folderItem ? folderItem.recent_applications : []
-  }, [activeTab, folders, allApplications])
-
-  const table = useApplicationsTable(filteredApplications)
+  const table = useApplicationsTable(applications, total, page, 25, setPage)
 
   const handleDeleteFolder = async () => {
       if (activeTab === "all") return
@@ -53,14 +49,15 @@ export default function Page() {
               await deleteFolder(parseInt(activeTab))
               toast.success("Folder deleted")
               setActiveTab("all")
-              mutate()
+              mutateFolders()
+              mutateApps()
           } catch (error) {
               // Error handled by apiRequest
           }
       }
   }
 
-  if (isLoading && !folders) {
+  if ((foldersLoading) && !folders) {
       return (
         <div className="flex h-screen items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
