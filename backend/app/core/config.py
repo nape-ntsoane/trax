@@ -7,7 +7,7 @@ import os
 
 # Load .env for local dev only
 if os.getenv("ENVIRONMENT") != "production":
-    load_dotenv("../.env")
+    load_dotenv(".env")
 
 
 def parse_cors(v: Any) -> list[str] | str:
