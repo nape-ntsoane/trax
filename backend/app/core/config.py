@@ -45,12 +45,12 @@ class Settings(BaseSettings):
         ]
 
     # Project info
-    PROJECT_NAME: str
+    PROJECT_NAME: str = ""
 
     # Postgres config (local/dev)
-    POSTGRES_SERVER: str
+    POSTGRES_SERVER: str = ""
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str
+    POSTGRES_USER: str = ""
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
 

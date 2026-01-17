@@ -10,3 +10,4 @@ reference_implementations
 alembic/versions/
 
 vibe-prompts
+.env
