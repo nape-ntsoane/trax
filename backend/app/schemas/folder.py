@@ -21,5 +21,5 @@ class FolderRead(FolderBase):
 
 class FolderWithRecentApplications(BaseModel):
     folder: Optional[FolderRead] # Optional for unfiled
-    recent_applications: List[ApplicationReadBrief]
+    recent_applications: List[ApplicationRead]
     application_count: int
