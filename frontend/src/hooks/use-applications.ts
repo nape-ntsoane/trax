@@ -12,6 +12,7 @@ export interface Application {
     salary: string;
     role: string;
     folder_id: number;
+    starred: boolean;
 }
 
 export interface ApplicationsResponse {

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
-  SelectItem,
+  SelectItem as UiSelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -97,6 +97,24 @@ export default function Page() {
       }
   }
 
+  const handleUpdate = async (id: number, type: "tag" | "priority" | "status", updateData: any) => {
+    try {
+      let endpoint = ""
+      if (type === "tag") endpoint = `${endpoints.selects.tags}/${id}`
+      if (type === "status") endpoint = `${endpoints.selects.statuses}/${id}`
+      if (type === "priority") endpoint = `${endpoints.selects.priorities}/${id}`
+
+      await apiRequest(endpoint, { 
+        method: "PUT",
+        body: JSON.stringify(updateData)
+      })
+      toast.success("Item updated")
+      fetchData()
+    } catch (error) {
+        // Error handled by apiRequest
+    }
+  }
+
   if (loading && !data) {
       return (
         <div className="flex h-screen items-center justify-center">
@@ -135,9 +153,9 @@ export default function Page() {
                         <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="tag">Tag</SelectItem>
-                        <SelectItem value="priority">Priority</SelectItem>
-                        <SelectItem value="status">Status</SelectItem>
+                        <UiSelectItem value="tag">Tag</UiSelectItem>
+                        <UiSelectItem value="priority">Priority</UiSelectItem>
+                        <UiSelectItem value="status">Status</UiSelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -148,13 +166,13 @@ export default function Page() {
                         <SelectValue placeholder="Select color" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="red">Red</SelectItem>
-                        <SelectItem value="blue">Blue</SelectItem>
-                        <SelectItem value="green">Green</SelectItem>
-                        <SelectItem value="yellow">Yellow</SelectItem>
-                        <SelectItem value="orange">Orange</SelectItem>
-                        <SelectItem value="purple">Purple</SelectItem>
-                        <SelectItem value="gray">Gray</SelectItem>
+                        <UiSelectItem value="red">Red</UiSelectItem>
+                        <UiSelectItem value="blue">Blue</UiSelectItem>
+                        <UiSelectItem value="green">Green</UiSelectItem>
+                        <UiSelectItem value="yellow">Yellow</UiSelectItem>
+                        <UiSelectItem value="orange">Orange</UiSelectItem>
+                        <UiSelectItem value="purple">Purple</UiSelectItem>
+                        <UiSelectItem value="gray">Gray</UiSelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -170,16 +188,19 @@ export default function Page() {
                 title="Tags" 
                 data={data?.tags || []} 
                 onDelete={(id) => handleDelete(id, "tag")}
+                onUpdate={(id, updateData) => handleUpdate(id, "tag", updateData)}
             />
             <SelectsTable 
                 title="Priorities" 
                 data={data?.priorities || []} 
                 onDelete={(id) => handleDelete(id, "priority")}
+                onUpdate={(id, updateData) => handleUpdate(id, "priority", updateData)}
             />
             <SelectsTable 
                 title="Statuses" 
                 data={data?.statuses || []} 
                 onDelete={(id) => handleDelete(id, "status")}
+                onUpdate={(id, updateData) => handleUpdate(id, "status", updateData)}
             />
           </div>
         </div>
