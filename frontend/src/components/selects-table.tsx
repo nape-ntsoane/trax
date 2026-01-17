@@ -19,6 +19,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 
 export type SelectItem = {
@@ -31,9 +41,31 @@ interface SelectsTableProps {
   data: SelectItem[]
   title: string
   onDelete: (id: number) => void
+  onUpdate: (id: number, data: any) => Promise<void>
 }
 
-export function SelectsTable({ data, title, onDelete }: SelectsTableProps) {
+export function SelectsTable({ data, title, onDelete, onUpdate }: SelectsTableProps) {
+  const [editingItem, setEditingItem] = React.useState<SelectItem | null>(null)
+  const [editTitle, setEditTitle] = React.useState("")
+  const [editColor, setEditColor] = React.useState("")
+
+  const handleEdit = (item: SelectItem) => {
+      setEditingItem(item)
+      setEditTitle(item.title)
+      setEditColor(item.color)
+  }
+
+  const handleSave = async () => {
+      if (!editingItem) return
+      try {
+          await onUpdate(editingItem.id, { title: editTitle, color: editColor })
+          toast.success("Item updated")
+          setEditingItem(null)
+      } catch (error) {
+          // Error handled by apiRequest
+      }
+  }
+
   const columns: ColumnDef<SelectItem>[] = React.useMemo(() => [
     {
       accessorKey: "title",
@@ -45,9 +77,9 @@ export function SelectsTable({ data, title, onDelete }: SelectsTableProps) {
       header: "Color",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <div 
-              className="h-4 w-4 rounded-full border" 
-              style={{ backgroundColor: row.getValue("color") }} 
+          <div
+              className="h-4 w-4 rounded-full border"
+              style={{ backgroundColor: row.getValue("color") }}
           />
           <span className="capitalize">{row.getValue("color")}</span>
         </div>
@@ -57,14 +89,14 @@ export function SelectsTable({ data, title, onDelete }: SelectsTableProps) {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast.info("Edit not implemented yet")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(row.original)}>
             <IconEdit className="h-4 w-4" />
             <span className="sr-only">Edit</span>
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 text-destructive" 
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
             onClick={() => onDelete(row.original.id)}
           >
             <IconTrash className="h-4 w-4" />
@@ -162,6 +194,34 @@ export function SelectsTable({ data, title, onDelete }: SelectsTableProps) {
           Next
         </Button>
       </div>
+
+      <Sheet open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Edit {title.slice(0, -1)}</SheetTitle>
+            <SheetDescription>
+              Make changes to your item here. Click save when you're done.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title
+              </Label>
+              <Input id="title" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="color" className="text-right">
+                Color
+              </Label>
+              <Input id="color" value={editColor} onChange={(e) => setEditColor(e.target.value)} className="col-span-3" />
+            </div>
+          </div>
+          <SheetFooter>
+            <Button type="submit" onClick={handleSave}>Save changes</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

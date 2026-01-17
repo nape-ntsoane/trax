@@ -14,11 +14,32 @@ export interface SelectsResponse {
 }
 
 export function useSelects() {
-    const { data } = useSWR<SelectsResponse>("/selects/", apiRequest);
+    const { data, mutate } = useSWR<SelectsResponse>("/selects/", apiRequest);
 
     return {
         statuses: data?.statuses || [],
         priorities: data?.priorities || [],
         tags: data?.tags || [],
+        mutate
     };
+}
+
+export async function createSelect(type: "tags" | "statuses" | "priorities", data: any) {
+    return apiRequest(`/selects/${type}`, {
+        method: "POST",
+        body: JSON.stringify(data),
+    });
+}
+
+export async function updateSelect(type: "tags" | "statuses" | "priorities", id: number, data: any) {
+    return apiRequest(`/selects/${type}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+    });
+}
+
+export async function deleteSelect(type: "tags" | "statuses" | "priorities", id: number) {
+    return apiRequest(`/selects/${type}/${id}`, {
+        method: "DELETE",
+    });
 }

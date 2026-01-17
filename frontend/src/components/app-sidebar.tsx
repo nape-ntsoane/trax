@@ -49,7 +49,7 @@ const data = {
     },
     {
       title: "Tags, Priorities & Statuses",
-      url: "/selects",
+      url: "/dashboard/selects",
       icon: IconTags,
     },
   ],
