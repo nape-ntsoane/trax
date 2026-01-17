@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { IconPlus, IconSearch, IconFolderPlus, IconChevronDown, IconTrash } from "@tabler/icons-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useApplicationsTable, ApplicationsTable } from "@/components/applications-table"
+import { useApplicationsTable, ApplicationsTable, Application } from "@/components/applications-table"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -19,23 +19,74 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CreateFolderSheet, CreateApplicationSheet } from "@/components/create-forms"
+import { apiRequest } from "@/lib/api"
+import { endpoints } from "@/config/endpoints"
+import { toast } from "sonner"
 
-import mockData from "./mock-data.json"
+type FolderDashboardItem = {
+  folder: {
+    title: string
+    position: number
+    id: number
+  }
+  recent_applications: Application[]
+  application_count: number
+}
+
+type DashboardResponse = {
+  items: FolderDashboardItem[]
+  total: number
+  page: number
+  per_page: number
+}
 
 export default function Page() {
   const [activeTab, setActiveTab] = React.useState("all")
   const [showCreateFolder, setShowCreateFolder] = React.useState(false)
   const [showCreateApp, setShowCreateApp] = React.useState(false)
+  const [dashboardData, setDashboardData] = React.useState<DashboardResponse | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  const fetchDashboard = React.useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await apiRequest(endpoints.folders.dashboard)
+      setDashboardData(data)
+    } catch (error) {
+      // Error handled by apiRequest
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    fetchDashboard()
+  }, [fetchDashboard])
+
+  const allApplications = React.useMemo(() => {
+    if (!dashboardData) return []
+    return dashboardData.items.flatMap(item => item.recent_applications)
+  }, [dashboardData])
 
   const filteredApplications = React.useMemo(() => {
+    if (!dashboardData) return []
     if (activeTab === "all") {
-      return mockData.applications
+      return allApplications
     }
     const folderId = parseInt(activeTab)
-    return mockData.applications.filter(app => app.folder_id === folderId)
-  }, [activeTab])
+    const folderItem = dashboardData.items.find(item => item.folder.id === folderId)
+    return folderItem ? folderItem.recent_applications : []
+  }, [activeTab, dashboardData, allApplications])
 
   const table = useApplicationsTable(filteredApplications)
+
+  if (loading && !dashboardData) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )
+  }
 
   return (
     <SidebarProvider
@@ -67,9 +118,9 @@ export default function Page() {
               <div className="flex-1 overflow-x-auto pb-2">
                 <TabsList className="w-max justify-start">
                   <TabsTrigger value="all">All</TabsTrigger>
-                  {mockData.folders.map((folder) => (
-                    <TabsTrigger key={folder.id} value={folder.id.toString()}>
-                      {folder.title}
+                  {dashboardData?.items.map((item) => (
+                    <TabsTrigger key={item.folder.id} value={item.folder.id.toString()}>
+                      {item.folder.title}
                     </TabsTrigger>
                   ))}
                 </TabsList>

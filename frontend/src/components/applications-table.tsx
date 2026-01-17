@@ -63,8 +63,16 @@ export type Application = {
   title: string
   company: string
   role: string
-  status: string
-  priority: string
+  status: {
+    id: number
+    title: string
+    color: string
+  } | null
+  priority: {
+    id: number
+    title: string
+    color: string
+  } | null
   salary: string
   closing_date: string | null
   link: string | null
@@ -139,7 +147,7 @@ function ActionCell({ application }: { application: Application }) {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="status">Status</Label>
-                <Select defaultValue={application.status}>
+                <Select defaultValue={application.status?.title}>
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -154,7 +162,7 @@ function ActionCell({ application }: { application: Application }) {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="priority">Priority</Label>
-                <Select defaultValue={application.priority}>
+                <Select defaultValue={application.priority?.title}>
                   <SelectTrigger id="priority">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
@@ -235,21 +243,42 @@ export const columns: ColumnDef<Application>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string
-      let variant: "default" | "secondary" | "destructive" | "outline" = "outline"
-      if (status === "Offer") variant = "default"
-      if (status === "Rejected") variant = "destructive"
-      if (status === "Interviewing") variant = "secondary"
+      const status = row.original.status
+      if (!status) return <Badge variant="outline">Unassigned</Badge>
       
-      return <Badge variant={variant}>{status}</Badge>
+      return (
+        <Badge 
+            variant="outline" 
+            style={{ 
+                borderColor: status.color, 
+                color: status.color,
+                backgroundColor: `${status.color}10` // 10% opacity
+            }}
+        >
+            {status.title}
+        </Badge>
+      )
     },
   },
   {
     accessorKey: "priority",
     header: "Priority",
     cell: ({ row }) => {
-      const priority = row.getValue("priority") as string
-      return <Badge variant="outline">{priority}</Badge>
+      const priority = row.original.priority
+      if (!priority) return <Badge variant="outline">Unassigned</Badge>
+
+      return (
+        <Badge 
+            variant="outline"
+            style={{ 
+                borderColor: priority.color, 
+                color: priority.color,
+                backgroundColor: `${priority.color}10` // 10% opacity
+            }}
+        >
+            {priority.title}
+        </Badge>
+      )
     },
   },
   {
@@ -261,7 +290,7 @@ export const columns: ColumnDef<Application>[] = [
     header: "Closing Date",
     cell: ({ row }) => {
       const date = row.getValue("closing_date") as string | null
-      return date ? <div>{date}</div> : <div className="text-muted-foreground">-</div>
+      return date ? <div>{new Date(date).toLocaleDateString()}</div> : <div className="text-muted-foreground">-</div>
     },
   },
   {

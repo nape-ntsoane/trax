@@ -4,4 +4,7 @@ export const endpoints = {
     register: "/auth/register",
     logout: "/auth/jwt/logout",
   },
+  folders: {
+    dashboard: "/folders/dashboard",
+  },
 }
