@@ -2,12 +2,6 @@ import secrets
 from typing import Annotated, Any, Literal
 from pydantic import AnyUrl, BeforeValidator, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from dotenv import load_dotenv
-import os
-
-# Load .env for local dev only
-if os.getenv("ENVIRONMENT") != "production":
-    load_dotenv(".env")
 
 
 def parse_cors(v: Any) -> list[str] | str:
