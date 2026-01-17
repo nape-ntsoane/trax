@@ -20,6 +20,23 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
       headers,
     });
 
+    if (res.status === 401) {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            if (window.location.pathname !== "/login") {
+                window.location.href = "/login";
+            }
+        }
+        // Don't throw error for 401 to avoid toast spam, just redirect
+        // Unless it's the logout endpoint itself, which might return 401 if token is already invalid
+        if (endpoint.includes("logout")) {
+             return null;
+        }
+        const err = new Error("Unauthorized");
+        (err as any).isShown = true; // Suppress generic error toast
+        throw err;
+    }
+
     if (!res.ok) {
       const error = await res.json().catch(() => ({ detail: "An error occurred" }));
       const message = getErrorMessage(error.detail);

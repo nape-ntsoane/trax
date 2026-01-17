@@ -9,7 +9,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   useEffect(() => {
-    if (appConfig.environment === "dev") return
+    // Removed dev environment check to enforce auth in dev as well
+    // if (appConfig.environment === "dev") return
 
     const token = localStorage.getItem("token")
     const publicPaths = ["/login", "/register"]
