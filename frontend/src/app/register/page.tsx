@@ -7,15 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { brand } from "@/config/brand"
 import { auth } from "@/lib/auth"
 import { toast } from "sonner"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { IconAlertTriangle } from "@tabler/icons-react"
 
 export default function RegisterPage() {
-  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [type, setType] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -31,7 +30,6 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      // Only sending email and password as requested
       await auth.register(email, password)
       toast.success("Registered successfully. Please login.")
       router.push("/login")
@@ -60,16 +58,13 @@ export default function RegisterPage() {
           </CardHeader>
           <form onSubmit={handleRegister}>
             <CardContent className="grid gap-4">
-                <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input 
-                    id="name" 
-                    placeholder="John Doe" 
-                    required 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-                </div>
+                <Alert variant="destructive">
+                    <IconAlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Important</AlertTitle>
+                    <AlertDescription>
+                        Please remember your password. There is no "reset password" feature implemented yet.
+                    </AlertDescription>
+                </Alert>
                 <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input 
@@ -80,18 +75,6 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="type">User Type</Label>
-                    <Select onValueChange={setType} value={type}>
-                        <SelectTrigger id="type">
-                            <SelectValue placeholder="Select user type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="student">Student</SelectItem>
-                            <SelectItem value="job_seeker">Job Seeker</SelectItem>
-                        </SelectContent>
-                    </Select>
                 </div>
                 <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
