@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict, Any, Tuple
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, desc
 from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
@@ -58,6 +58,7 @@ class ApplicationRepository:
                 selectinload(Application.folder)
             )
             .where(Application.creator_id == user_id)
+            .order_by(desc(Application.updated_at))
             .offset(skip)
             .limit(limit)
         )
@@ -102,6 +103,6 @@ class ApplicationRepository:
         total = (await self.session.execute(count_query)).scalar_one()
 
         # Paginate
-        query = query.offset(skip).limit(limit)
+        query = query.order_by(desc(Application.updated_at)).offset(skip).limit(limit)
         result = await self.session.execute(query)
         return result.scalars().all(), total

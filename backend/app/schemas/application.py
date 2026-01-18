@@ -121,6 +121,8 @@ class ApplicationUpdate(BaseModel):
 
 class ApplicationRead(ApplicationBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     tags: List[TagRead] = []
     status: Optional[StatusRead] = None
     priority: Optional[PriorityRead] = None
@@ -135,6 +137,8 @@ class ApplicationReadBrief(BaseModel):
     status: Optional[StatusRead] = None
     priority: Optional[PriorityRead] = None
     closing_date: Optional[date] = None
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
