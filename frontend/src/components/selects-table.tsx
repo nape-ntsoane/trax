@@ -122,7 +122,7 @@ export function SelectsTable({ data, title, onDelete, onUpdate }: SelectsTablePr
   return (
     <div className="w-full space-y-4">
       <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

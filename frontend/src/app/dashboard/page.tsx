@@ -24,6 +24,7 @@ import { CreateFolderSheet, CreateApplicationSheet } from "@/components/create-f
 import { toast } from "sonner"
 import { useFolders, deleteFolder } from "@/hooks/use-folders"
 import { useApplications } from "@/hooks/use-applications"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Page() {
   const [activeTab, setActiveTab] = React.useState("all")
@@ -75,7 +76,7 @@ export default function Page() {
       }
   }
 
-  if ((foldersLoading) && !folders) {
+  if (foldersLoading && !folders) {
       return (
         <div className="flex h-screen items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -113,13 +114,17 @@ export default function Page() {
               <div className="flex-1 overflow-x-auto pb-2">
                 <TabsList className="w-max justify-start">
                   <TabsTrigger value="all">All</TabsTrigger>
-                  {folders?.map((item) => (
-                    item.folder && (
-                        <TabsTrigger key={item.folder.id} value={item.folder.id.toString()}>
-                        {item.folder.title}
-                        </TabsTrigger>
-                    )
-                  ))}
+                  {foldersLoading ? (
+                    <Skeleton className="h-8 w-48" />
+                  ) : (
+                    folders?.map((item) => (
+                      item.folder && (
+                          <TabsTrigger key={item.folder.id} value={item.folder.id.toString()}>
+                          {item.folder.title}
+                          </TabsTrigger>
+                      )
+                    ))
+                  )}
                 </TabsList>
               </div>
               {activeTab !== "all" && (
@@ -208,7 +213,16 @@ export default function Page() {
 
             {/* Table Content */}
             <TabsContent value={activeTab} className="mt-0">
-               <ApplicationsTable table={table} />
+               {appsLoading ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+               ) : (
+                <ApplicationsTable table={table} />
+               )}
             </TabsContent>
           </Tabs>
         </div>

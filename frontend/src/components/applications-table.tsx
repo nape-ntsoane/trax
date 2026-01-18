@@ -441,10 +441,7 @@ interface ApplicationsTableProps {
 export function ApplicationsTable({ table }: ApplicationsTableProps) {
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-
-      </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

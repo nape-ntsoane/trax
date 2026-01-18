@@ -7,203 +7,69 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem as UiSelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { SelectsTable, type SelectItem } from "@/components/selects-table"
-import { IconPlus } from "@tabler/icons-react"
-import { apiRequest } from "@/lib/api"
-import { endpoints } from "@/config/endpoints"
+import { SelectsTable } from "@/components/selects-table"
+import { useSelects, deleteSelect, updateSelect } from "@/hooks/use-selects"
 import { toast } from "sonner"
-
-type SelectsResponse = {
-  tags: SelectItem[]
-  statuses: SelectItem[]
-  priorities: SelectItem[]
-}
+import { Button } from "@/components/ui/button"
+import { IconPlus } from "@tabler/icons-react"
+import { CreateSelectSheet } from "@/components/create-forms"
 
 export default function Page() {
-  const [data, setData] = React.useState<SelectsResponse | null>(null)
-  const [loading, setLoading] = React.useState(true)
-  
-  // Form state
-  const [title, setTitle] = React.useState("")
-  const [type, setType] = React.useState<"tag" | "priority" | "status">("tag")
-  const [color, setColor] = React.useState("blue")
-  const [creating, setCreating] = React.useState(false)
+  const { statuses, priorities, tags, mutate } = useSelects()
+  const [showCreateSheet, setShowCreateSheet] = React.useState(false)
 
-  const fetchData = React.useCallback(async () => {
-    try {
-      setLoading(true)
-      const res = await apiRequest(endpoints.selects.list)
-      setData(res)
-    } catch (error) {
-      // Error handled by apiRequest
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    fetchData()
-  }, [fetchData])
-
-  const handleCreate = async () => {
-    if (!title) {
-        toast.error("Title is required")
-        return
-    }
-    
-    setCreating(true)
-    try {
-        let endpoint = ""
-        if (type === "tag") endpoint = endpoints.selects.tags
-        if (type === "status") endpoint = endpoints.selects.statuses
-        if (type === "priority") endpoint = endpoints.selects.priorities
-        
-        await apiRequest(endpoint, {
-            method: "POST",
-            body: JSON.stringify({ title, color })
-        })
-        
-        toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created`)
-        setTitle("")
-        fetchData()
-    } catch (error) {
-        // Error handled by apiRequest
-    } finally {
-        setCreating(false)
-    }
-  }
-
-  const handleDelete = async (id: number, type: "tag" | "priority" | "status") => {
+  const handleDelete = async (type: "tags" | "statuses" | "priorities", id: number) => {
+    if (confirm(`Are you sure you want to delete this item?`)) {
       try {
-        let endpoint = ""
-        if (type === "tag") endpoint = `${endpoints.selects.tags}/${id}`
-        if (type === "status") endpoint = `${endpoints.selects.statuses}/${id}`
-        if (type === "priority") endpoint = `${endpoints.selects.priorities}/${id}`
-
-        await apiRequest(endpoint, { method: "DELETE" })
+        await deleteSelect(type, id)
         toast.success("Item deleted")
-        fetchData()
+        mutate()
       } catch (error) {
-          // Error handled by apiRequest
+        // Error is already handled by apiRequest, which shows a toast
       }
-  }
-
-  const handleUpdate = async (id: number, type: "tag" | "priority" | "status", updateData: any) => {
-    try {
-      let endpoint = ""
-      if (type === "tag") endpoint = `${endpoints.selects.tags}/${id}`
-      if (type === "status") endpoint = `${endpoints.selects.statuses}/${id}`
-      if (type === "priority") endpoint = `${endpoints.selects.priorities}/${id}`
-
-      await apiRequest(endpoint, { 
-        method: "PUT",
-        body: JSON.stringify(updateData)
-      })
-      toast.success("Item updated")
-      fetchData()
-    } catch (error) {
-        // Error handled by apiRequest
     }
   }
 
-  if (loading && !data) {
-      return (
-        <div className="flex h-screen items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )
+  const handleUpdate = async (type: "tags" | "statuses" | "priorities", id: number, data: any) => {
+      await updateSelect(type, id, data)
+      mutate()
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
+    <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col p-4 md:p-6 gap-8">
-          {/* Top Form */}
-          <div className="flex flex-col sm:flex-row gap-2 items-end">
-            <div className="grid gap-2 flex-1 w-full">
-                <label className="text-sm font-medium">Title</label>
-                <Input 
-                    placeholder="e.g. Urgent" 
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-            </div>
-            <div className="grid gap-2 w-full sm:w-32">
-                <label className="text-sm font-medium">Type</label>
-                <Select value={type} onValueChange={(v: any) => setType(v)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <UiSelectItem value="tag">Tag</UiSelectItem>
-                        <UiSelectItem value="priority">Priority</UiSelectItem>
-                        <UiSelectItem value="status">Status</UiSelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="grid gap-2 w-full sm:w-32">
-                <label className="text-sm font-medium">Color</label>
-                <Select value={color} onValueChange={setColor}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select color" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <UiSelectItem value="red">Red</UiSelectItem>
-                        <UiSelectItem value="blue">Blue</UiSelectItem>
-                        <UiSelectItem value="green">Green</UiSelectItem>
-                        <UiSelectItem value="yellow">Yellow</UiSelectItem>
-                        <UiSelectItem value="orange">Orange</UiSelectItem>
-                        <UiSelectItem value="purple">Purple</UiSelectItem>
-                        <UiSelectItem value="gray">Gray</UiSelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <Button size="icon" className="shrink-0" onClick={handleCreate} disabled={creating}>
-                <IconPlus className="h-4 w-4" />
-                <span className="sr-only">Create</span>
+          <div className="flex justify-end">
+            <Button onClick={() => setShowCreateSheet(true)}>
+              <IconPlus className="h-4 w-4 mr-2" />
+              Create Select
             </Button>
           </div>
 
-          {/* Tables */}
-          <div className="grid gap-8">
-            <SelectsTable 
-                title="Tags" 
-                data={data?.tags || []} 
-                onDelete={(id) => handleDelete(id, "tag")}
-                onUpdate={(id, updateData) => handleUpdate(id, "tag", updateData)}
+          <div className="space-y-8">
+            <SelectsTable
+              data={tags}
+              title="Tags"
+              onDelete={(id) => handleDelete("tags", id)}
+              onUpdate={(id, data) => handleUpdate("tags", id, data)}
             />
-            <SelectsTable 
-                title="Priorities" 
-                data={data?.priorities || []} 
-                onDelete={(id) => handleDelete(id, "priority")}
-                onUpdate={(id, updateData) => handleUpdate(id, "priority", updateData)}
+            <SelectsTable
+              data={statuses}
+              title="Statuses"
+              onDelete={(id) => handleDelete("statuses", id)}
+              onUpdate={(id, data) => handleUpdate("statuses", id, data)}
             />
-            <SelectsTable 
-                title="Statuses" 
-                data={data?.statuses || []} 
-                onDelete={(id) => handleDelete(id, "status")}
-                onUpdate={(id, updateData) => handleUpdate(id, "status", updateData)}
+            <SelectsTable
+              data={priorities}
+              title="Priorities"
+              onDelete={(id) => handleDelete("priorities", id)}
+              onUpdate={(id, data) => handleUpdate("priorities", id, data)}
             />
           </div>
         </div>
+        <CreateSelectSheet open={showCreateSheet} onOpenChange={setShowCreateSheet} mutate={mutate} />
       </SidebarInset>
     </SidebarProvider>
   )

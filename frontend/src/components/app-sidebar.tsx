@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { brand } from "@/config/brand"
+import Image from "next/image"
 
 const data = {
   user: {
@@ -49,7 +50,7 @@ const data = {
     },
     {
       title: "Tags, Priorities & Statuses",
-      url: "/dashboard/selects",
+      url: "/selects",
       icon: IconTags,
     },
   ],
@@ -84,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <brand.logo className="size-5" />
+                  <Image src={brand.logo} alt={`${brand.name} logo`} width={20} height={20} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold text-lg">{brand.name}</span>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { brand } from "@/config/brand"
 import { auth } from "@/lib/auth"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -43,6 +44,7 @@ export function SiteHeader() {
         <h1 className="text-base font-medium">{title}</h1>
         
         <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">

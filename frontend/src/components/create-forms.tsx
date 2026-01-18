@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import { useState } from "react"
 import { createFolder, useFolders } from "@/hooks/use-folders"
 import { createApplication } from "@/hooks/use-applications"
-import { useSelects } from "@/hooks/use-selects"
+import { useSelects, createSelect } from "@/hooks/use-selects"
 
 export function CreateFolderSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [title, setTitle] = useState("")
@@ -231,6 +231,90 @@ export function CreateApplicationSheet({ open, onOpenChange, mutate }: { open: b
         </div>
         <SheetFooter>
           <Button type="submit" onClick={handleSubmit}>Create Application</Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+export function CreateSelectSheet({ open, onOpenChange, mutate }: { open: boolean; onOpenChange: (open: boolean) => void, mutate: () => void }) {
+  const [title, setTitle] = useState("")
+  const [type, setType] = useState<"tags" | "statuses" | "priorities">("tags")
+  const [color, setColor] = useState("blue")
+  const [creating, setCreating] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!title) {
+        toast.error("Title is required")
+        return
+    }
+    
+    setCreating(true)
+    try {
+        await createSelect(type, { title, color })
+        toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created`)
+        setTitle("")
+        mutate()
+        onOpenChange(false)
+    } catch (error) {
+        // Error handled by apiRequest
+    } finally {
+        setCreating(false)
+    }
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="overflow-y-auto p-6">
+        <SheetHeader>
+          <SheetTitle>Create Select Item</SheetTitle>
+          <SheetDescription>
+            Create a new tag, priority, or status.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid gap-6 py-6">
+          <div className="grid gap-2">
+            <Label htmlFor="title">Title</Label>
+            <Input 
+              id="title" 
+              placeholder="e.g. Urgent" 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="type">Type</Label>
+            <Select value={type} onValueChange={(v: any) => setType(v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tags">Tag</SelectItem>
+                <SelectItem value="priorities">Priority</SelectItem>
+                <SelectItem value="statuses">Status</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="color">Color</Label>
+            <Select value={color} onValueChange={setColor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select color" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="red">Red</SelectItem>
+                <SelectItem value="blue">Blue</SelectItem>
+                <SelectItem value="green">Green</SelectItem>
+                <SelectItem value="yellow">Yellow</SelectItem>
+                <SelectItem value="orange">Orange</SelectItem>
+                <SelectItem value="purple">Purple</SelectItem>
+                <SelectItem value="gray">Gray</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <SheetFooter>
+          <Button type="submit" onClick={handleSubmit} disabled={creating}>Create</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
