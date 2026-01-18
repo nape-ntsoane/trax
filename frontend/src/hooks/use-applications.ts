@@ -13,6 +13,8 @@ export interface Application {
     role: string;
     folder_id: number;
     starred: boolean;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface ApplicationsResponse {
