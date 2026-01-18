@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -60,6 +61,7 @@ import { toast } from "sonner"
 import { updateApplication, deleteApplication } from "@/hooks/use-applications"
 import { useFolders } from "@/hooks/use-folders"
 import { useSelects } from "@/hooks/use-selects"
+import { ChevronDown } from "lucide-react"
 
 export type Application = {
   id: number
@@ -78,6 +80,8 @@ export type Application = {
   } | null
   salary: string
   closing_date: string | null
+  created_at: string
+  updated_at: string
   link: string | null
   starred: boolean
   folder_id: number
@@ -359,6 +363,22 @@ export const columns: ColumnDef<Application>[] = [
     },
   },
   {
+    accessorKey: "created_at",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = row.getValue("created_at") as string
+      return <div>{new Date(date).toLocaleDateString()}</div>
+    },
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Updated At",
+    cell: ({ row }) => {
+      const date = row.getValue("updated_at") as string
+      return <div>{new Date(date).toLocaleDateString()}</div>
+    },
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => <ActionCell application={row.original} />,
@@ -368,7 +388,10 @@ export const columns: ColumnDef<Application>[] = [
 export function useApplicationsTable(data: Application[], total: number = 0, page: number = 1, perPage: number = 25, onPageChange?: (page: number) => void) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    created_at: true,
+    updated_at: true,
+  })
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState("")
 
@@ -415,26 +438,12 @@ interface ApplicationsTableProps {
   table: ReactTable<Application>
 }
 
-function getColumnClassName(columnId: string) {
-  switch (columnId) {
-    case "company":
-      return "hidden sm:table-cell"
-    case "role":
-      return "hidden md:table-cell"
-    case "priority":
-      return "hidden lg:table-cell"
-    case "salary":
-      return "hidden xl:table-cell"
-    case "closing_date":
-      return "hidden xl:table-cell"
-    default:
-      return ""
-  }
-}
-
 export function ApplicationsTable({ table }: ApplicationsTableProps) {
   return (
     <div className="w-full">
+      <div className="flex items-center py-4">
+
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -442,7 +451,7 @@ export function ApplicationsTable({ table }: ApplicationsTableProps) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className={getColumnClassName(header.id)}>
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -463,7 +472,7 @@ export function ApplicationsTable({ table }: ApplicationsTableProps) {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={getColumnClassName(cell.column.id)}>
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
