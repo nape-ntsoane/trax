@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # Only for local/dev, ignored if env vars are set (e.g., in Render)
         env_file="../.env",
-        env_ignore_empty=True,
+        env_ignore_empty=False,
         extra="ignore",
     )
 
@@ -42,29 +42,6 @@ class Settings(BaseSettings):
 
     # Production
     DATABASE_URL: str = ""
-
-    # Postgres config (local/dev)
-    POSTGRES_SERVER: str = ""
-    POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = ""
-    POSTGRES_PASSWORD: str = ""
-    POSTGRES_DB: str = ""
-
-    @computed_field
-    @property
-    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
-        return PostgresDsn.build(
-            scheme="postgresql+psycopg",
-            username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD,
-            host=self.POSTGRES_SERVER,
-            port=self.POSTGRES_PORT,
-            path=self.POSTGRES_DB,
-        )
-
-    @property
-    def POSTGRESQL_DATABASE_URI(self) -> str:
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
 
     # Logging
     LOGGING_LEVEL: str = "INFO"
