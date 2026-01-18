@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Table, Text, JSON
+from sqlalchemy import Column, Integer, String, DateTime, Date, Boolean, ForeignKey, Table, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.base import Base
@@ -19,7 +19,7 @@ class Application(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     company = Column(String, index=True)
-    closing_date = Column(DateTime, nullable=True)
+    closing_date = Column(Date, nullable=True)
     
     priority_id = Column(Integer, ForeignKey("priorities.id", ondelete="SET NULL"), nullable=True)
     priority = relationship("app.db.models.selects.Priority")
