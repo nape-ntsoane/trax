@@ -214,7 +214,7 @@ export default function Page() {
         </div>
 
         <CreateFolderSheet open={showCreateFolder} onOpenChange={setShowCreateFolder} />
-        <CreateApplicationSheet open={showCreateApp} onOpenChange={setShowCreateApp} />
+        <CreateApplicationSheet open={showCreateApp} onOpenChange={setShowCreateApp} mutate={mutateApps} />
       </SidebarInset>
     </SidebarProvider>
   )

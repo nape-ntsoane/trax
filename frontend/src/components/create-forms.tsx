@@ -66,9 +66,9 @@ export function CreateFolderSheet({ open, onOpenChange }: { open: boolean; onOpe
   )
 }
 
-export function CreateApplicationSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function CreateApplicationSheet({ open, onOpenChange, mutate }: { open: boolean; onOpenChange: (open: boolean) => void, mutate: () => void }) {
   const { statuses, priorities } = useSelects()
-  const { folders, mutate } = useFolders()
+  const { folders, mutate: mutateFolders } = useFolders()
   
   const [formData, setFormData] = useState({
     title: "",
@@ -98,7 +98,8 @@ export function CreateApplicationSheet({ open, onOpenChange }: { open: boolean; 
       
       await createApplication(payload)
       toast.success("Application created")
-      mutate() // Refresh folders to update counts/recent apps
+      mutate() // Refresh applications
+      mutateFolders() // Refresh folders to update counts/recent apps
       onOpenChange(false)
       setFormData({
         title: "",
