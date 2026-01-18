@@ -13,7 +13,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // if (appConfig.environment === "dev") return
 
     const token = localStorage.getItem("token")
-    const publicPaths = ["/login", "/register"]
+    const publicPaths = ["/login", "/register", "/"]
 
     if (!token && !publicPaths.includes(pathname)) {
       router.push("/login")

@@ -81,11 +81,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-2 h-12"
+              className="data-[slot=sidebar-menu-button]:!p-0 h-12"
             >
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Image src={brand.logo} alt={`${brand.name} logo`} width={20} height={20} />
+                <div className="flex aspect-square size-8 items-center justify-center">
+                  <Image src={brand.logo} alt={`${brand.name} logo`} width={32} height={32} className="rounded-lg border-2 border-white/20 shadow-lg" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold text-lg">{brand.name}</span>

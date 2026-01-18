@@ -10,6 +10,7 @@ import Link from "next/link"
 import { brand } from "@/config/brand"
 import { auth } from "@/lib/auth"
 import { toast } from "sonner"
+import Image from "next/image"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -32,15 +33,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
-         <div className="flex items-center gap-2 font-semibold">
-            <brand.logo className="size-6" />
-            <span>{brand.name}</span>
-         </div>
-      </header>
-      <div className="flex flex-1 items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="absolute inset-0 z-0 animate-hue-rotate">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-3xl"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_rgba(255,255,255,0)_60%)]"></div>
+        </div>
+        <div className="relative z-10 flex flex-col items-center text-center mb-8">
+            <div className="flex items-center gap-4">
+                <Image src={brand.logo} alt={`${brand.name} logo`} width={64} height={64} className="rounded-lg border-2 border-white/20 shadow-lg" />
+                <h1 className="text-5xl font-bold tracking-tight text-foreground">{brand.name}</h1>
+            </div>
+            <p className="text-muted-foreground mt-2">{brand.description}</p>
+        </div>
+        <Card className="w-full max-w-sm bg-background/80 backdrop-blur-sm relative z-10">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
@@ -84,7 +89,6 @@ export default function LoginPage() {
             </CardFooter>
           </form>
         </Card>
-      </div>
     </div>
   )
 }
