@@ -8,6 +8,7 @@ from app.schemas.folder import FolderCreate, FolderUpdate, FolderRead
 from app.services.folder import FolderService
 from app.services.application import ApplicationService
 from app.api.routes.limiter import limiter
+from typing import Literal
 
 folder_router = APIRouter()
 
@@ -78,8 +79,10 @@ async def get_folder_applications(
     folder_id: int,
     page: int = 1,
     per_page: int = 10,
+    sort_by: str = "updated_at",
+    sort_order: Literal["asc", "desc"] = "desc",
     db: AsyncSession = Depends(get_async_session),
     current_user: User = Depends(current_active_user),
 ):
     app_service = ApplicationService(db)
-    return await app_service.search_applications(current_user, query=None, filters={"folder_id": folder_id}, page=page, per_page=per_page)
+    return await app_service.search_applications(current_user, query=None, filters={"folder_id": folder_id}, page=page, per_page=per_page, sort_by=sort_by, sort_order=sort_order)

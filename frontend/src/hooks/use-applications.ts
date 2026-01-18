@@ -22,9 +22,9 @@ export interface ApplicationsResponse {
     per_page: number;
 }
 
-export function useApplications(folderId?: number, page: number = 1, perPage: number = 25) {
+export function useApplications(folderId?: number, page: number = 1, perPage: number = 25, sortBy: string = "updated_at", sortOrder: "asc" | "desc" = "desc") {
     const baseUrl = folderId ? `/folders/${folderId}/applications` : "/applications/";
-    const endpoint = `${baseUrl}?page=${page}&per_page=${perPage}`;
+    const endpoint = `${baseUrl}?page=${page}&per_page=${perPage}&sort_by=${sortBy}&sort_order=${sortOrder}`;
     
     const { data, error, isLoading, mutate } = useSWR<ApplicationsResponse>(endpoint, apiRequest);
 

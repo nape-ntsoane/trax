@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { IconPlus, IconSearch, IconFolderPlus, IconChevronDown, IconTrash } from "@tabler/icons-react"
+import { IconPlus, IconSearch, IconFolderPlus, IconChevronDown, IconTrash, IconArrowUp, IconArrowDown } from "@tabler/icons-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useApplicationsTable, ApplicationsTable, Application } from "@/components/applications-table"
 import {
@@ -17,6 +17,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { CreateFolderSheet, CreateApplicationSheet } from "@/components/create-forms"
 import { toast } from "sonner"
@@ -29,12 +31,14 @@ export default function Page() {
   const [showCreateApp, setShowCreateApp] = React.useState(false)
   const [page, setPage] = React.useState(1)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [sortBy, setSortBy] = React.useState("updated_at")
+  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc")
   
   const { folders, isLoading: foldersLoading, mutate: mutateFolders } = useFolders()
   
   // Fetch applications based on active tab and page
   const folderId = activeTab === "all" ? undefined : parseInt(activeTab)
-  const { applications, total, isLoading: appsLoading, mutate: mutateApps } = useApplications(folderId, page)
+  const { applications, total, isLoading: appsLoading, mutate: mutateApps } = useApplications(folderId, page, 25, sortBy, sortOrder)
 
   // Reset page when tab changes
   React.useEffect(() => {
@@ -128,15 +132,40 @@ export default function Page() {
 
             {/* Search & Actions Row */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="relative w-full sm:w-96">
-                <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search applications..."
-                  className="pl-9"
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative w-full sm:w-96">
+                  <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search applications..."
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="shrink-0">
+                      Sort by <IconChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
+                      <DropdownMenuRadioItem value="updated_at">Last Updated</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="created_at">Date Created</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="title">Title</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="company">Company</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="role">Role</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="status">Status</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="priority">Priority</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="salary">Salary</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="closing_date">Closing Date</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="outline" size="icon" onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+                  {sortOrder === "asc" ? <IconArrowUp className="h-4 w-4" /> : <IconArrowDown className="h-4 w-4" />}
+                </Button>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <DropdownMenu>

@@ -1,11 +1,12 @@
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Literal
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, or_, desc
+from sqlalchemy import select, func, or_, desc, asc
 from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
 from app.db.models.application import Application
+from app.db.models.selects import Status, Priority
 
 class ApplicationRepository:
     def __init__(self, session: AsyncSession):
@@ -48,7 +49,7 @@ class ApplicationRepository:
             raise HTTPException(status_code=403, detail="Not authorized")
         return application
 
-    async def get_all(self, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[Application]:
+    async def get_all(self, user_id: uuid.UUID, skip: int = 0, limit: int = 100, sort_by: str = "updated_at", sort_order: Literal["asc", "desc"] = "desc") -> List[Application]:
         query = (
             select(Application)
             .options(
@@ -58,15 +59,29 @@ class ApplicationRepository:
                 selectinload(Application.folder)
             )
             .where(Application.creator_id == user_id)
-            .order_by(desc(Application.updated_at))
-            .offset(skip)
-            .limit(limit)
         )
+        
+        if sort_by == "status":
+            query = query.join(Status, Application.status_id == Status.id, isouter=True)
+            sort_column = Status.title
+        elif sort_by == "priority":
+            query = query.join(Priority, Application.priority_id == Priority.id, isouter=True)
+            sort_column = Priority.title
+        else:
+            sort_column = getattr(Application, sort_by, None)
+
+        if sort_column is not None:
+            if sort_order == "asc":
+                query = query.order_by(asc(sort_column))
+            else:
+                query = query.order_by(desc(sort_column))
+
+        query = query.offset(skip).limit(limit)
         result = await self.session.execute(query)
         return result.scalars().all()
 
     async def search(
-        self, user_id: uuid.UUID, query_str: Optional[str] = None, filters: Optional[Dict[str, Any]] = None, skip: int = 0, limit: int = 100
+        self, user_id: uuid.UUID, query_str: Optional[str] = None, filters: Optional[Dict[str, Any]] = None, skip: int = 0, limit: int = 100, sort_by: str = "updated_at", sort_order: Literal["asc", "desc"] = "desc"
     ) -> Tuple[List[Application], int]:
         query = (
             select(Application)
@@ -102,7 +117,22 @@ class ApplicationRepository:
         count_query = select(func.count()).select_from(query.subquery())
         total = (await self.session.execute(count_query)).scalar_one()
 
+        if sort_by == "status":
+            query = query.join(Status, Application.status_id == Status.id, isouter=True)
+            sort_column = Status.title
+        elif sort_by == "priority":
+            query = query.join(Priority, Application.priority_id == Priority.id, isouter=True)
+            sort_column = Priority.title
+        else:
+            sort_column = getattr(Application, sort_by, None)
+
+        if sort_column is not None:
+            if sort_order == "asc":
+                query = query.order_by(asc(sort_column))
+            else:
+                query = query.order_by(desc(sort_column))
+
         # Paginate
-        query = query.order_by(desc(Application.updated_at)).offset(skip).limit(limit)
+        query = query.offset(skip).limit(limit)
         result = await self.session.execute(query)
         return result.scalars().all(), total

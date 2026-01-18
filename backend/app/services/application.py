@@ -6,6 +6,7 @@ from app.schemas.application import ApplicationCreate, ApplicationUpdate, Applic
 from app.db.models.application import Application
 from app.db.models.user import User
 from app.db.models.selects import Tag
+from typing import Literal
 
 class ApplicationService:
     def __init__(self, session: AsyncSession):
@@ -46,11 +47,11 @@ class ApplicationService:
         application = await self.repo.verify_ownership(application_id, current_user.id)
         return application
 
-    async def list_applications(self, current_user: User, page: int = 1, per_page: int = 10):
+    async def list_applications(self, current_user: User, page: int = 1, per_page: int = 10, sort_by: str = "updated_at", sort_order: Literal["asc", "desc"] = "desc"):
         # Use search with empty query to get paginated results with total count
-        return await self.search_applications(current_user, query=None, filters=None, page=page, per_page=per_page)
+        return await self.search_applications(current_user, query=None, filters=None, page=page, per_page=per_page, sort_by=sort_by, sort_order=sort_order)
 
-    async def search_applications(self, current_user: User, query: str | None, filters: dict | None, page: int = 1, per_page: int = 10):
+    async def search_applications(self, current_user: User, query: str | None, filters: dict | None, page: int = 1, per_page: int = 10, sort_by: str = "updated_at", sort_order: Literal["asc", "desc"] = "desc"):
         skip = (page - 1) * per_page
-        applications, total = await self.repo.search(current_user.id, query, filters, skip, per_page)
+        applications, total = await self.repo.search(current_user.id, query, filters, skip, per_page, sort_by, sort_order)
         return {"items": applications, "total": total, "page": page, "per_page": per_page}

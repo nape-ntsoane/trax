@@ -7,6 +7,7 @@ from app.db.models.application import Application
 from app.schemas.application import ApplicationCreate, ApplicationUpdate, ApplicationRead
 from app.services.application import ApplicationService
 from app.api.routes.limiter import limiter
+from typing import Literal
 
 application_router = APIRouter()
 
@@ -64,8 +65,10 @@ async def list_applications(
     request: Request,
     page: int = 1,
     per_page: int = 10,
+    sort_by: str = "updated_at",
+    sort_order: Literal["asc", "desc"] = "desc",
     db: AsyncSession = Depends(get_async_session),
     current_user: User = Depends(current_active_user),
 ):
     service = ApplicationService(db)
-    return await service.list_applications(current_user, page, per_page)
+    return await service.list_applications(current_user, page, per_page, sort_by, sort_order)
