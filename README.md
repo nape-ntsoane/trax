@@ -2,6 +2,15 @@
 
 Trax is a modern, full-stack web application designed to help job seekers organize and track their job applications. It features a robust backend built with FastAPI and a responsive frontend built with Next.js.
 
+## Screens
+Dashboard
+![Dashboard Screen](images/dashboard.png)
+Authentication
+<p align="center" >
+  <img src="images/login.png" width="45%" />
+  <img src="images/register.png" width="45%" />
+</p>
+
 ## Features
 
 *   **Application Tracking**: Keep track of all your job applications in one place.
