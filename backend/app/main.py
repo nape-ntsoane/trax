@@ -13,13 +13,14 @@ from app.core.config import settings
 from app.core.middleware import log_middleware
 from app.db.init import create_db_and_tables
 from app.scripts.seed_db import seed_db
+from app.scripts.reset_db import reset_db
 
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
    await create_db_and_tables()
-   await seed_db()
+   await reset_db()
    yield
 
 
