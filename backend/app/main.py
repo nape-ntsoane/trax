@@ -20,7 +20,8 @@ from app.scripts.reset_db import reset_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
    await create_db_and_tables()
-   await reset_db()
+   # await reset_db()
+   await seed_db()
    yield
 
 
